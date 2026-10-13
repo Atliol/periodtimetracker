@@ -1,10 +1,40 @@
 import 'dart:ui';
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:period_tracker_app/features/home/presentation/screens/home_page.dart';
+import 'package:flutter/services.dart';
+import 'features/guide/presentation/screens/guide_page.dart';
+import 'features/home/presentation/screens/home_page.dart';
+import 'features/home/presentation/screens/app_drawer.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Hive.initFlutter();
+  var box = await Hive.openBox('guideBox');
+
+  // Box ထဲမှာ Data လုံးဝမရှိသေးမှသာ JSON မှ Data များကို ထည့်ပေးမည်
+  if (box.isEmpty) {
+    await loadGuidesFromJson(box);
+  }
   runApp(const PeriodTrackerApp());
 }
+Future<void> loadGuidesFromJson(Box box) async {
+  try {
+    // JSON ဖိုင်ကို ဖတ်ရှုခြင်း
+    final String response = await rootBundle.loadString('assets/data/guides.json');
+    final List<dynamic> data = json.decode(response);
+
+    // Hive Box ထဲသို့ Data တစ်ခုချင်းစီ ထည့်သွင်းခြင်း
+    for (var item in data) {
+      box.add({
+        'title': item['title'],
+        'content': item['content'],
+      });
+    }
+  } catch (e) {
+    debugPrint("Error loading guides: $e");
+  }
+}
+
 
 class PeriodTrackerApp extends StatelessWidget {
   const PeriodTrackerApp({super.key});
@@ -16,7 +46,6 @@ class PeriodTrackerApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         useMaterial3: true,
-        // Scaffold အားလုံးအတွက် default background အရောင်ကို တစ်ခါတည်း သတ်မှတ်ပေးခြင်း
         scaffoldBackgroundColor: const Color(0xFFD47A83),
       ),
       home: const MainNavigationScreen(),
@@ -37,7 +66,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   final List<Widget> _pages = [
     const HomePage(),
     const PeriodTimeScreen(),
-    const GuideScreen(),
+    const GuidePage(),
     const CommunityScreen(),
     const AiScreen(),
   ];
@@ -45,6 +74,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: const AppDrawer(),
       extendBody: true,
       body: _pages[_currentIndex],
       bottomNavigationBar: Padding(
@@ -133,10 +163,8 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
 }
 
 // ---------------------------------------------------------
-// Screen Placeholders (Background ကို အရောင်တစ်သားတည်းဖြစ်အောင် ထည့်ထားသည်)
+// Screen Placeholders
 // ---------------------------------------------------------
-
-
 
 class PeriodTimeScreen extends StatelessWidget {
   const PeriodTimeScreen({super.key});
@@ -147,14 +175,7 @@ class PeriodTimeScreen extends StatelessWidget {
   );
 }
 
-class GuideScreen extends StatelessWidget {
-  const GuideScreen({super.key});
-  @override
-  Widget build(BuildContext context) => const Scaffold(
-    backgroundColor: Color(0xFFD47A83),
-    body: Center(child: Text('Guide Page', style: TextStyle(fontSize: 18, color: Colors.white))),
-  );
-}
+
 
 class CommunityScreen extends StatelessWidget {
   const CommunityScreen({super.key});
