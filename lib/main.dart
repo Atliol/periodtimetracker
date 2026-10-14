@@ -2,13 +2,28 @@ import 'dart:ui';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'features/ai_assistant/presentation/screens/ai_page.dart';
 import 'features/guide/presentation/screens/guide_page.dart';
 import 'features/home/presentation/screens/home_page.dart';
 import 'features/home/presentation/screens/app_drawer.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+
+import 'features/period_tracker/presentation/screens/home_screen.dart';
+import 'features/period_tracker/domain/cycle_model.dart'; // 🌟 CycleModel ကို import လုပ်ပါ
+import 'features/period_tracker/data/local_storage_service.dart'; // 🌟 LocalStorageService ကို import လုပ်ပါ
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
+
+  // 🌟 CycleModel Adapter ကို Register လုပ်ခြင်း
+  if (!Hive.isAdapterRegistered(0)) {
+    Hive.registerAdapter(CycleModelAdapter());
+  }
+
+  // 🌟 Period Tracker အတွက် Box ကို ဖွင့်လှစ်ခြင်း
+  await Hive.openBox<CycleModel>(LocalStorageService.boxName);
+
   var box = await Hive.openBox('guideBox');
 
   // Box ထဲမှာ Data လုံးဝမရှိသေးမှသာ JSON မှ Data များကို ထည့်ပေးမည်
@@ -17,6 +32,7 @@ void main() async {
   }
   runApp(const PeriodTrackerApp());
 }
+
 Future<void> loadGuidesFromJson(Box box) async {
   try {
     // JSON ဖိုင်ကို ဖတ်ရှုခြင်း
@@ -34,7 +50,6 @@ Future<void> loadGuidesFromJson(Box box) async {
     debugPrint("Error loading guides: $e");
   }
 }
-
 
 class PeriodTrackerApp extends StatelessWidget {
   const PeriodTrackerApp({super.key});
@@ -65,10 +80,10 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
 
   final List<Widget> _pages = [
     const HomePage(),
-    const PeriodTimeScreen(),
+    const HomeScreen(),
     const GuidePage(),
     const CommunityScreen(),
-    const AiScreen(),
+    const AiPage(),
   ];
 
   @override
@@ -162,35 +177,11 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   }
 }
 
-// ---------------------------------------------------------
-// Screen Placeholders
-// ---------------------------------------------------------
-
-class PeriodTimeScreen extends StatelessWidget {
-  const PeriodTimeScreen({super.key});
-  @override
-  Widget build(BuildContext context) => const Scaffold(
-    backgroundColor: Color(0xFFD47A83),
-    body: Center(child: Text('Period Time Page', style: TextStyle(fontSize: 18, color: Colors.white))),
-  );
-}
-
-
-
 class CommunityScreen extends StatelessWidget {
   const CommunityScreen({super.key});
   @override
   Widget build(BuildContext context) => const Scaffold(
     backgroundColor: Color(0xFFD47A83),
     body: Center(child: Text('Community Page', style: TextStyle(fontSize: 18, color: Colors.white))),
-  );
-}
-
-class AiScreen extends StatelessWidget {
-  const AiScreen({super.key});
-  @override
-  Widget build(BuildContext context) => const Scaffold(
-    backgroundColor: Color(0xFFD47A83),
-    body: Center(child: Text('AI Page', style: TextStyle(fontSize: 18, color: Colors.white))),
   );
 }
