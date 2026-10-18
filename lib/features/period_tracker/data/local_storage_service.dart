@@ -18,4 +18,10 @@ class LocalStorageService {
     final box = Hive.box<CycleModel>(boxName);
     await box.deleteAt(index);
   }
+
+  // 🌟 မှတ်တမ်းအားလုံးကို ရှင်းလင်းဖျက်ဆီးပေးမည့် Method အသစ်
+  static Future<void> clearAllCycles() async {
+    final box = Hive.box<CycleModel>(boxName);
+    await box.clear();
+  }
 }

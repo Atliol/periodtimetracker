@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:ui';
 
 class QuickSection extends StatelessWidget {
   const QuickSection({super.key});
@@ -25,32 +26,39 @@ class QuickSection extends StatelessWidget {
       onTap: onTap,
       child: Column(
         children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.08),
-                  blurRadius: 6,
-                  offset: const Offset(0, 3),
+          // 🌟 Glassmorphism Effect for Quick Icons
+          ClipRRect(
+            borderRadius: BorderRadius.circular(30),
+            child: BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+              child: Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.35),
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.white.withOpacity(0.6), width: 1.5),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
                 ),
-              ],
+                child: Icon(icon, color: color, size: 30),
+              ),
             ),
-            // 🌟 အိုင်ကွန် အရွယ်အစားကို 26 သို့ တိုးမြှင့်ထားသည်[cite: 27]
-            child: Icon(icon, color: color, size: 37),
           ),
           const SizedBox(height: 6),
           Text(
             label,
             style: const TextStyle(
-              color: Colors.black87,
+              color: Colors.white,
               fontSize: 11,
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.bold,
+              shadows: [Shadow(color: Colors.black26, blurRadius: 2, offset: Offset(0, 1))],
             ),
           ),
-          const SizedBox(height: 10),
         ],
       ),
     );

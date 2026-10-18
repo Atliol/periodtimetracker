@@ -42,10 +42,10 @@ class _GuidePageState extends State<GuidePage> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: const Color(0xFFD47A83),
+      color: const Color(0xFFFFB6C1),
       child: SafeArea(
         child: Scaffold(
-          backgroundColor: const Color(0xFFD47A83),
+          backgroundColor: const Color(0xFFFFB6C1),
           appBar: const CustomAppBar(title: 'Period Guide & Tips'),
           body: SingleChildScrollView(
             padding: const EdgeInsets.all(20.0),
