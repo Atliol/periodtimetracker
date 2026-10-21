@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:ui'; // 🌟 BackdropFilter အတွက်
 import 'package:audioplayers/audioplayers.dart';
 import '../../../../core/widgets/custom_app_bar.dart';
 
@@ -14,7 +15,6 @@ class _MusicPlayerPageState extends State<MusicPlayerPage> {
   bool _isPlaying = false;
   String _currentSong = 'သက်သာစေမည့် သဘာဝရေသံနှင့် တေးဂီတ';
 
-  // နမူနာ သီချင်းစာရင်း (Sample Audio URLs)
   final List<Map<String, String>> _playlist = [
     {
       'title': 'Calm Rain & Nature Sounds',
@@ -79,62 +79,67 @@ class _MusicPlayerPageState extends State<MusicPlayerPage> {
             padding: const EdgeInsets.all(20.0),
             child: Column(
               children: [
-                // 🌟 အလယ်တွင် ပြသမည့် Music Player Card ကြီး
-                Container(
-                  padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFFFF758C), Color(0xFFFF416C)],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    borderRadius: BorderRadius.circular(30),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.1),
-                        blurRadius: 15,
-                        offset: const Offset(0, 6),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(24),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.2),
-                          shape: BoxShape.circle,
+                // 🌟 အလယ်တွင် ပြသမည့် Music Player Card ကြီး (Glassmorphic)
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(30),
+                  child: BackdropFilter(
+                    filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+                    child: Container(
+                      padding: const EdgeInsets.all(24),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.25),
+                        borderRadius: BorderRadius.circular(30),
+                        border: Border.all(
+                          color: Colors.white.withValues(alpha: 0.5),
+                          width: 1.5,
                         ),
-                        child: const Icon(Icons.music_note_rounded, size: 50, color: Colors.white),
-                      ),
-                      const SizedBox(height: 20),
-                      Text(
-                        _currentSong,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 8),
-                      const Text(
-                        'Period Pain Relief & Relaxation',
-                        style: TextStyle(color: Colors.white70, fontSize: 12.5),
-                      ),
-                      const SizedBox(height: 24),
-                      // Play / Pause ခလုတ်
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          IconButton(
-                            icon: Icon(_isPlaying ? Icons.pause_circle_filled_rounded : Icons.play_circle_filled_rounded,
-                                color: Colors.white, size: 64),
-                            onPressed: _pauseOrResume,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.08),
+                            blurRadius: 15,
+                            offset: const Offset(0, 6),
                           ),
                         ],
                       ),
-                    ],
+                      child: Column(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(24),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withValues(alpha: 0.3),
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(Icons.music_note_rounded, size: 50, color: Colors.white),
+                          ),
+                          const SizedBox(height: 20),
+                          Text(
+                            _currentSong,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 8),
+                          const Text(
+                            'Period Pain Relief & Relaxation',
+                            style: TextStyle(color: Colors.white70, fontSize: 12.5),
+                          ),
+                          const SizedBox(height: 24),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              IconButton(
+                                icon: Icon(_isPlaying ? Icons.pause_circle_filled_rounded : Icons.play_circle_filled_rounded,
+                                    color: Colors.white, size: 64),
+                                onPressed: _pauseOrResume,
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 30),
@@ -148,45 +153,55 @@ class _MusicPlayerPageState extends State<MusicPlayerPage> {
                 ),
                 const SizedBox(height: 12),
 
-                // သီချင်းစာရင်း ListView
+                // သီချင်းစာရင်း ListView (Glassmorphic Playlist Cards)
                 Expanded(
                   child: ListView.builder(
                     itemCount: _playlist.length,
                     itemBuilder: (context, index) {
                       final song = _playlist[index];
-                      return Container(
-                        margin: const EdgeInsets.only(bottom: 12),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(20),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.05),
-                              blurRadius: 8,
-                              offset: const Offset(0, 3),
-                            ),
-                          ],
-                        ),
-                        child: ListTile(
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                          leading: Container(
-                            padding: const EdgeInsets.all(10),
+                      return ClipRRect(
+                        borderRadius: BorderRadius.circular(20),
+                        child: BackdropFilter(
+                          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                          child: Container(
+                            margin: const EdgeInsets.only(bottom: 12),
                             decoration: BoxDecoration(
-                              color: Colors.pink.shade50,
-                              shape: BoxShape.circle,
+                              color: Colors.white.withValues(alpha: 0.25),
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(
+                                color: Colors.white.withValues(alpha: 0.4),
+                                width: 1.5,
+                              ),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.05),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 3),
+                                ),
+                              ],
                             ),
-                            child: const Icon(Icons.headset_rounded, color: Color(0xFFFF416C), size: 22),
+                            child: ListTile(
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                              leading: Container(
+                                padding: const EdgeInsets.all(10),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withValues(alpha: 0.3),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(Icons.headset_rounded, color: Colors.white, size: 22),
+                              ),
+                              title: Text(
+                                song['title']!,
+                                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14.5, color: Colors.white),
+                              ),
+                              subtitle: Text(
+                                song['duration']!,
+                                style: const TextStyle(color: Colors.white70, fontSize: 12),
+                              ),
+                              trailing: const Icon(Icons.play_arrow_rounded, color: Colors.white),
+                              onTap: () => _playSong(song['url']!, song['title']!),
+                            ),
                           ),
-                          title: Text(
-                            song['title']!,
-                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14.5, color: Colors.black87),
-                          ),
-                          subtitle: Text(
-                            song['duration']!,
-                            style: const TextStyle(color: Colors.black54, fontSize: 12),
-                          ),
-                          trailing: const Icon(Icons.play_arrow_rounded, color: Color(0xFFFF416C)),
-                          onTap: () => _playSong(song['url']!, song['title']!),
                         ),
                       );
                     },

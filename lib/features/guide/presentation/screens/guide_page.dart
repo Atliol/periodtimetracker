@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'dart:ui'; // 🌟 BackdropFilter အတွက် လိုအပ်သည်
 import '../../../../core/widgets/custom_app_bar.dart';
+import '../../../home/presentation/widgets/feeling_widget.dart';
 import 'guide_category_page.dart';
 import 'music_player_page.dart';
-import 'symptom_log_page.dart'; // 🌟 Symptom Log Page ကို import လုပ်ရန်
+import 'symptom_log_page.dart';
 
 class GuidePage extends StatefulWidget {
   const GuidePage({super.key});
@@ -140,11 +142,11 @@ class _GuidePageState extends State<GuidePage> {
                 ),
                 const SizedBox(height: 16),
 
-                // Row ကတ် ၃ ခု (ဆောင်ရန်၊ ရှောင်ရန်၊ Music)
+                // 🌟 Row ကတ် ၃ ခု (ဆောင်ရန်၊ ရှောင်ရန်၊ Music) - Glassmorphism Effect
                 Row(
                   children: [
                     Expanded(
-                      child: _buildGridFeatureCard(
+                      child: _buildGlassGridFeatureCard(
                         context,
                         title: 'ဆောင်ရန်',
                         icon: Icons.check_circle_rounded,
@@ -165,7 +167,7 @@ class _GuidePageState extends State<GuidePage> {
                     ),
                     const SizedBox(width: 10),
                     Expanded(
-                      child: _buildGridFeatureCard(
+                      child: _buildGlassGridFeatureCard(
                         context,
                         title: 'ရှောင်ရန်',
                         icon: Icons.cancel_rounded,
@@ -186,7 +188,7 @@ class _GuidePageState extends State<GuidePage> {
                     ),
                     const SizedBox(width: 10),
                     Expanded(
-                      child: _buildGridFeatureCard(
+                      child: _buildGlassGridFeatureCard(
                         context,
                         title: 'Music',
                         icon: Icons.headset_rounded,
@@ -205,7 +207,7 @@ class _GuidePageState extends State<GuidePage> {
                 ),
                 const SizedBox(height: 16),
 
-                // 🌟 အောက်ဆုံးတွင် Column ပုံစံဖြင့် Symptom & Cycle Tracker ကတ်အသစ် ထည့်သွင်းခြင်း
+                // 🌟 အောက်ဆုံးတွင် Column ပုံစံဖြင့် Symptom & Cycle Tracker ကတ် - Glassmorphism Effect
                 GestureDetector(
                   onTap: () {
                     Navigator.push(
@@ -215,60 +217,218 @@ class _GuidePageState extends State<GuidePage> {
                       ),
                     );
                   },
-                  child: Container(
-                    padding: const EdgeInsets.all(18),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(24),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.08),
-                          blurRadius: 10,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(14),
-                          decoration: BoxDecoration(
-                            gradient: const LinearGradient(
-                              colors: [Color(0xFFFF416C), Color(0xFFFF4B2B)],
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(24),
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+                      child: Container(
+                        padding: const EdgeInsets.all(18),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.3),
+                          borderRadius: BorderRadius.circular(24),
+                          border: Border.all(
+                            color: Colors.white.withValues(alpha: 0.5),
+                            width: 1.5,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.05),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
                             ),
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.pink.withValues(alpha: 0.4),
-                                blurRadius: 8,
-                                offset: const Offset(0, 3),
-                              ),
-                            ],
-                          ),
-                          child: const Icon(Icons.favorite_rounded, color: Colors.white, size: 28),
+                          ],
                         ),
-                        const SizedBox(width: 18),
-                        const Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'ရာသီနှင့် ကျန်းမာရေး မှတ်တမ်း',
-                                style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: Colors.black87),
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(14),
+                              decoration: BoxDecoration(
+                                gradient: const LinearGradient(
+                                  colors: [Color(0xFFFF416C), Color(0xFFFF4B2B)],
+                                ),
+                                shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.pink.withValues(alpha: 0.4),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 3),
+                                  ),
+                                ],
                               ),
-                              SizedBox(height: 4),
-                              Text(
-                                'ပြောင်းလဲနေသော ရာသီစက်ဝန်းနှင့် ရောဂါအခြေအနေများကို မှတ်ပါ။',
-                                style: TextStyle(fontSize: 12, color: Colors.black54),
+                              child: const Icon(Icons.favorite_rounded, color: Colors.white, size: 28),
+                            ),
+                            const SizedBox(width: 18),
+                            // 🌟 ပြင်ဆင်ပြီးသား crossAxisAlignment (အသေးဖြင့်)
+                            const Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'ရာသီနှင့် ကျန်းမာရေး မှတ်တမ်း',
+                                    style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: Colors.white),
+                                  ),
+                                  SizedBox(height: 4),
+                                  Text(
+                                    'ပြောင်းလဲနေသော ရာသီစက်ဝန်းနှင့် ရောဂါအခြေအနေများကို မှတ်ပါ။',
+                                    style: TextStyle(fontSize: 12, color: Colors.white70),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
+                            ),
+                            const Icon(Icons.arrow_forward_ios_rounded, color: Colors.white70, size: 16),
+                          ],
                         ),
-                        const Icon(Icons.arrow_forward_ios_rounded, color: Colors.grey, size: 16),
-                      ],
+                      ),
                     ),
                   ),
                 ),
+
+                //စမးသက်ချင်
+                const SizedBox(height: 10),
+                // 🌟 အောက်ဆုံးတွင် Column ပုံစံဖြင့် Symptom & Cycle Tracker ကတ် - Glassmorphism Effect
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const SymptomLogPage(),
+                      ),
+                    );
+                  },
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(24),
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+                      child: Container(
+                        padding: const EdgeInsets.all(18),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.3),
+                          borderRadius: BorderRadius.circular(24),
+                          border: Border.all(
+                            color: Colors.white.withValues(alpha: 0.5),
+                            width: 1.5,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.05),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(14),
+                              decoration: BoxDecoration(
+                                gradient: const LinearGradient(
+                                  colors: [Color(0xFFFF416C), Color(0xFFFF4B2B)],
+                                ),
+                                shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.pink.withValues(alpha: 0.4),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 3),
+                                  ),
+                                ],
+                              ),
+                              child: const Icon(Icons.favorite_rounded, color: Colors.white, size: 28),
+                            ),
+                            const SizedBox(width: 18),
+                            // 🌟 ပြင်ဆင်ပြီးသား crossAxisAlignment (အသေးဖြင့်)
+                            const Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'ရာသီနှင့် ကျန်းမာရေး မှတ်တမ်း',
+                                    style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold, color: Colors.white),
+                                  ),
+                                  SizedBox(height: 4),
+                                  Text(
+                                    'ပြောင်းလဲနေသော ရာသီစက်ဝန်းနှင့် ရောဂါအခြေအနေများကို မှတ်ပါ။',
+                                    style: TextStyle(fontSize: 12, color: Colors.white70),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const Icon(Icons.arrow_forward_ios_rounded, color: Colors.white70, size: 16),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+//စမ်းသက်ခြင်း
+
+                const SizedBox(height: 16),
+
+                // 🌟 Row ကတ် ၃ ခု (ဆောင်ရန်၊ ရှောင်ရန်၊ Music) - Glassmorphism Effect
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildGlassGridFeatureCard(
+                        context,
+                        title: 'ဆောင်ရန်',
+                        icon: Icons.check_circle_rounded,
+                        gradientColors: [const Color(0xFF4CAF50), const Color(0xFF81C784)],
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const GuideCategoryPage(
+                                categoryKey: 'do',
+                                categoryTitle: 'ဆောင်ရန် အချက်များ (Dos)',
+                                headerColor: Color(0xFF4CAF50),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: _buildGlassGridFeatureCard(
+                        context,
+                        title: 'ရှောင်ရန်',
+                        icon: Icons.cancel_rounded,
+                        gradientColors: [const Color(0xFFE53935), const Color(0xFFEF5350)],
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const GuideCategoryPage(
+                                categoryKey: 'dont',
+                                categoryTitle: "ရှောင်ရန် အချက်များ (Don'ts)",
+                                headerColor: Color(0xFFE53935),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: _buildGlassGridFeatureCard(
+                        context,
+                        title: 'Music',
+                        icon: Icons.headset_rounded,
+                        gradientColors: [const Color(0xFF8E24AA), const Color(0xFFAB47BC)],
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const MusicPlayerPage(),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+
                 const SizedBox(height: 100),
               ],
             ),
@@ -278,7 +438,7 @@ class _GuidePageState extends State<GuidePage> {
     );
   }
 
-  Widget _buildGridFeatureCard(
+  Widget _buildGlassGridFeatureCard(
       BuildContext context, {
         required String title,
         required IconData icon,
@@ -287,51 +447,61 @@ class _GuidePageState extends State<GuidePage> {
       }) {
     return GestureDetector(
       onTap: onTap,
-      child: Container(
-        height: 125,
-        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.08),
-              blurRadius: 8,
-              offset: const Offset(0, 4),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+          child: Container(
+            height: 125,
+            padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.3),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: Colors.white.withValues(alpha: 0.5),
+                width: 1.5,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.05),
+                  blurRadius: 8,
+                  offset: const Offset(0, 4),
+                ),
+              ],
             ),
-          ],
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(colors: gradientColors),
-                shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: gradientColors[0].withValues(alpha: 0.4),
-                    blurRadius: 6,
-                    offset: const Offset(0, 2),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(colors: gradientColors),
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: gradientColors[0].withValues(alpha: 0.4),
+                        blurRadius: 6,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-              child: Icon(icon, color: Colors.white, size: 24),
+                  child: Icon(icon, color: Colors.white, size: 24),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
             ),
-            const SizedBox(height: 10),
-            Text(
-              title,
-              style: const TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-              ),
-              textAlign: TextAlign.center,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
+          ),
         ),
       ),
     );

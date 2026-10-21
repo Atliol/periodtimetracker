@@ -1,45 +1,50 @@
-import 'dart:ui';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'firebase_options.dart';
 import 'features/ai_assistant/presentation/screens/ai_page.dart';
+import 'features/community/presentation/screens/community_page.dart';
 import 'features/guide/presentation/screens/guide_page.dart';
 import 'features/home/presentation/screens/home_page.dart';
 import 'features/home/presentation/screens/app_drawer.dart';
+import 'core/widgets/period_bottom_nav_bar.dart'; // 🌟 Bottom Nav Bar ကို import လုပ်ခြင်း
 import 'package:hive_flutter/hive_flutter.dart';
-
+import 'package:firebase_core/firebase_core.dart';
 import 'features/period_tracker/presentation/screens/home_screen.dart';
-import 'features/period_tracker/domain/cycle_model.dart'; // 🌟 CycleModel ကို import လုပ်ပါ
-import 'features/period_tracker/data/local_storage_service.dart'; // 🌟 LocalStorageService ကို import လုပ်ပါ
+import 'features/period_tracker/domain/cycle_model.dart';
+import 'features/period_tracker/data/local_storage_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
   await Hive.initFlutter();
 
-  // 🌟 CycleModel Adapter ကို Register လုပ်ခြင်း
   if (!Hive.isAdapterRegistered(0)) {
     Hive.registerAdapter(CycleModelAdapter());
   }
 
-  // 🌟 Period Tracker အတွက် Box ကို ဖွင့်လှစ်ခြင်း
-  await Hive.openBox<CycleModel>(LocalStorageService.boxName);
+  await Hive.openBox<CycleModel>(
+    LocalStorageService.boxName,
+  );
 
   var box = await Hive.openBox('guideBox');
 
-  // Box ထဲမှာ Data လုံးဝမရှိသေးမှသာ JSON မှ Data များကို ထည့်ပေးမည်
   if (box.isEmpty) {
     await loadGuidesFromJson(box);
   }
+
   runApp(const PeriodTrackerApp());
 }
 
 Future<void> loadGuidesFromJson(Box box) async {
   try {
-    // JSON ဖိုင်ကို ဖတ်ရှုခြင်း
     final String response = await rootBundle.loadString('assets/data/guides.json');
     final List<dynamic> data = json.decode(response);
 
-    // Hive Box ထဲသို့ Data တစ်ခုချင်းစီ ထည့်သွင်းခြင်း
     for (var item in data) {
       box.add({
         'title': item['title'],
@@ -69,20 +74,27 @@ class PeriodTrackerApp extends StatelessWidget {
 }
 
 class MainNavigationScreen extends StatefulWidget {
-  const MainNavigationScreen({super.key});
+  final int initialIndex; // 🌟 ဝင်ရောက်မည့် Tab ၏ Index များကို လက်ခံရန်
+  const MainNavigationScreen({super.key, this.initialIndex = 0});
 
   @override
   State<MainNavigationScreen> createState() => _MainNavigationScreenState();
 }
 
 class _MainNavigationScreenState extends State<MainNavigationScreen> {
-  int _currentIndex = 0;
+  late int _currentIndex;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentIndex = widget.initialIndex; // 🌟 ပေးလိုက်သော Index ဖြင့် စတင်ခြင်း
+  }
 
   final List<Widget> _pages = [
     const HomePage(),
     const HomeScreen(),
     const GuidePage(),
-    const CommunityScreen(),
+    const CommunityPage(),
     const AiPage(),
   ];
 
@@ -92,96 +104,14 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
       drawer: const AppDrawer(),
       extendBody: true,
       body: _pages[_currentIndex],
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 20.0),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(30),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 15.0, sigmaY: 15.0),
-            child: Container(
-              height: 75,
-              padding: const EdgeInsets.symmetric(horizontal: 10),
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.25),
-                borderRadius: BorderRadius.circular(30),
-                border: Border.all(
-                  color: Colors.white.withValues(alpha: 0.5),
-                  width: 1.5,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.pink.shade900.withValues(alpha: 0.08),
-                    blurRadius: 20,
-                    offset: const Offset(0, 10),
-                  ),
-                ],
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  _buildGlassTab(0, Icons.home_rounded, 'Home'),
-                  _buildGlassTab(1, Icons.calendar_month_rounded, 'Period'),
-                  _buildGlassTab(2, Icons.menu_book_rounded, 'Guide'),
-                  _buildGlassTab(3, Icons.chat_bubble_rounded, 'Community'),
-                  _buildGlassTab(4, Icons.psychology_rounded, 'AI'),
-                ],
-              ),
-            ),
-          ),
-        ),
+      bottomNavigationBar: PeriodBottomNavBar(
+        currentIndex: _currentIndex,
+        onTap: (index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
       ),
     );
   }
-
-  Widget _buildGlassTab(int index, IconData icon, String label) {
-    bool isSelected = _currentIndex == index;
-
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          _currentIndex = index;
-        });
-      },
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 250),
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-        decoration: BoxDecoration(
-          color: isSelected ? Colors.white.withValues(alpha: 0.4) : Colors.transparent,
-          borderRadius: BorderRadius.circular(20),
-          border: isSelected
-              ? Border.all(color: Colors.white.withValues(alpha: 0.7), width: 1)
-              : null,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              icon,
-              color: isSelected ? Colors.white : Colors.white70,
-              size: 22,
-            ),
-            const SizedBox(height: 2),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 10,
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                color: isSelected ? Colors.white : Colors.white70,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class CommunityScreen extends StatelessWidget {
-  const CommunityScreen({super.key});
-  @override
-  Widget build(BuildContext context) => const Scaffold(
-    backgroundColor: Color(0xFFD47A83),
-    body: Center(child: Text('Community Page', style: TextStyle(fontSize: 18, color: Colors.white))),
-  );
 }

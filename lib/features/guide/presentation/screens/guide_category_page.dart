@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:ui'; // 🌟 BackdropFilter အတွက်
 import 'package:hive_flutter/hive_flutter.dart';
 import '../../../../core/widgets/custom_app_bar.dart';
 
@@ -38,7 +39,6 @@ class GuideCategoryPage extends StatelessWidget {
       child: SafeArea(
         child: Scaffold(
           backgroundColor: const Color(0xFFD47A83),
-          // 🌟 ဤနေရာတွင် showBackButton: true ကို ထည့်သွင်းပေးပါ
           appBar: CustomAppBar(
             title: categoryTitle,
             showBackButton: true,
@@ -64,57 +64,68 @@ class GuideCategoryPage extends StatelessWidget {
                   final guide = filteredGuides[index];
                   final IconData itemIcon = _getIconData(guide['icon']);
 
-                  return Container(
-                    margin: const EdgeInsets.only(bottom: 16),
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(24),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha: 0.05),
-                          blurRadius: 10,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: headerColor.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(16),
+                  // 🌟 Glassmorphism List Item Card
+                  return ClipRRect(
+                    borderRadius: BorderRadius.circular(24),
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+                      child: Container(
+                        margin: const EdgeInsets.only(bottom: 16),
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.25),
+                          borderRadius: BorderRadius.circular(24),
+                          border: Border.all(
+                            color: Colors.white.withValues(alpha: 0.4),
+                            width: 1.5,
                           ),
-                          child: Icon(itemIcon, color: headerColor, size: 30),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha: 0.05),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
                         ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                guide['title'] ?? '',
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black87,
-                                ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withValues(alpha: 0.3),
+                                borderRadius: BorderRadius.circular(16),
                               ),
-                              const SizedBox(height: 6),
-                              Text(
-                                guide['content'] ?? '',
-                                style: const TextStyle(
-                                  fontSize: 13.5,
-                                  color: Colors.black54,
-                                  height: 1.4,
-                                ),
+                              child: Icon(itemIcon, color: headerColor, size: 30),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    guide['title'] ?? '',
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 6),
+                                  Text(
+                                    guide['content'] ?? '',
+                                    style: const TextStyle(
+                                      fontSize: 13.5,
+                                      color: Colors.white70,
+                                      height: 1.4,
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
-                      ],
+                      ),
                     ),
                   );
                 },

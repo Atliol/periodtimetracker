@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "323182828941",
+    "project_id": "period-f6cab",
+    "storage_bucket": "period-f6cab.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:323182828941:android:dc0b6fc6b537921d6cf1c4",
+        "android_client_info": {
+          "package_name": "com.period.period_tracker_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC_2PimlANPmKkR5VkNf7mnNZrSFHyKrtE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

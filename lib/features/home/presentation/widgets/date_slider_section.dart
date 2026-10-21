@@ -94,297 +94,266 @@ class DateSliderSection extends StatelessWidget {
     final int daysInCurrentMonth =
         DateTime(selectedDate.year, selectedDate.month + 1, 0).day;
 
-    return ClipRRect(
-      borderRadius: const BorderRadius.only(
-        bottomLeft: Radius.circular(35),
-        bottomRight: Radius.circular(35),
-      ),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-        child: Container(
-          padding: const EdgeInsets.only(bottom: 25, top: 12),
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.3), // 🌟 ဖောက်ထွင်းမြင်ရသော အဖြူရောင် Glass Card
-            borderRadius: const BorderRadius.only(
-              bottomLeft: Radius.circular(35),
-              bottomRight: Radius.circular(35),
-            ),
-            border: Border.all(
-              color: Colors.white.withValues(alpha: 0.4),
-              width: 1.5,
-            ),
-          ),
-          child: Column(
-            children: [
-              // 🌟 Date Badge ကို လုံးဝ ဖြုတ်ထားသည်
-              const SizedBox(height: 5),
+    return Column(
+      children: [
+        // သွေးစက် Slider
+        SizedBox(
+          height: 75,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            itemCount: daysInCurrentMonth,
+            itemBuilder: (context, index) {
+              final int dayNumber = index + 1;
+              final bool isSelected = dayNumber == selectedDate.day;
+              final bool isPeriodDay = periodDays.contains(dayNumber);
 
-              // သွေးစက် Slider
-              SizedBox(
-                height: 75,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  itemCount: daysInCurrentMonth,
-                  itemBuilder: (context, index) {
-                    final int dayNumber = index + 1;
-                    final bool isSelected = dayNumber == selectedDate.day;
-                    final bool isPeriodDay = periodDays.contains(dayNumber);
+              final List<Color> dropGradient = isSelected
+                  ? const [Color(0xFFE94360), Color(0xFFB9163D)]
+                  : isPeriodDay
+                  ? const [Color(0xFFFFA2B0), Color(0xFFF26780)]
+                  : const [Color(0xFFFFF0B8), Color(0xFFFFD66E)];
 
-                    final List<Color> dropGradient = isSelected
-                        ? const [Color(0xFFE94360), Color(0xFFB9163D)]
-                        : isPeriodDay
-                        ? const [Color(0xFFFFA2B0), Color(0xFFF26780)]
-                        : const [Color(0xFFFFF0B8), Color(0xFFFFD66E)];
+              final Color baseColor = dropGradient.last;
+              final Color numberColor = isSelected || isPeriodDay
+                  ? Colors.white
+                  : const Color(0xFF704452);
 
-                    final Color baseColor = dropGradient.last;
-                    final Color numberColor = isSelected || isPeriodDay
-                        ? Colors.white
-                        : const Color(0xFF704452);
-
-                    return Semantics(
-                      label: '$dayNumber${isPeriodDay ? ', Period day' : ''}',
-                      selected: isSelected,
-                      child: Column(
-                        children: [
-                          Container(
-                            margin: const EdgeInsets.symmetric(horizontal: 5),
-                            child: PhysicalShape(
-                              clipper: BloodDropClipper(),
-                              color: baseColor,
-                              elevation: isSelected ? 5 : 2,
-                              shadowColor: baseColor.withValues(alpha: 0.32),
-                              child: SizedBox(
-                                width: 46,
-                                height: 56,
-                                child: ClipPath(
-                                  clipper: BloodDropClipper(),
-                                  child: CustomPaint(
-                                    foregroundPainter: isSelected
-                                        ? const _BloodDropOutlinePainter(
-                                      color: Colors.white,
-                                    )
-                                        : null,
-                                    child: DecoratedBox(
-                                      decoration: BoxDecoration(
-                                        gradient: LinearGradient(
-                                          begin: Alignment.topLeft,
-                                          end: Alignment.bottomRight,
-                                          colors: dropGradient,
+              return Semantics(
+                label: '$dayNumber${isPeriodDay ? ', Period day' : ''}',
+                selected: isSelected,
+                child: Column(
+                  children: [
+                    Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 5),
+                      child: PhysicalShape(
+                        clipper: BloodDropClipper(),
+                        color: baseColor,
+                        elevation: isSelected ? 5 : 2,
+                        shadowColor: baseColor.withValues(alpha: 0.32),
+                        child: SizedBox(
+                          width: 46,
+                          height: 56,
+                          child: ClipPath(
+                            clipper: BloodDropClipper(),
+                            child: CustomPaint(
+                              foregroundPainter: isSelected
+                                  ? const _BloodDropOutlinePainter(
+                                color: Colors.white,
+                              )
+                                  : null,
+                              child: DecoratedBox(
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                    colors: dropGradient,
+                                  ),
+                                ),
+                                child: Stack(
+                                  alignment: Alignment.center,
+                                  children: [
+                                    Positioned(
+                                      left: 12,
+                                      top: 10,
+                                      child: Transform.rotate(
+                                        angle: -0.32,
+                                        child: Container(
+                                          width: 6,
+                                          height: 15,
+                                          decoration: BoxDecoration(
+                                            color: Colors.white.withValues(
+                                              alpha: isSelected ? 0.38 : 0.48,
+                                            ),
+                                            borderRadius:
+                                            BorderRadius.circular(8),
+                                          ),
                                         ),
                                       ),
-                                      child: Stack(
-                                        alignment: Alignment.center,
-                                        children: [
-                                          Positioned(
-                                            left: 12,
-                                            top: 10,
-                                            child: Transform.rotate(
-                                              angle: -0.32,
-                                              child: Container(
-                                                width: 6,
-                                                height: 15,
-                                                decoration: BoxDecoration(
-                                                  color: Colors.white.withValues(
-                                                    alpha: isSelected ? 0.38 : 0.48,
-                                                  ),
-                                                  borderRadius:
-                                                  BorderRadius.circular(8),
-                                                ),
-                                              ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 7),
+                                      child: Text(
+                                        '$dayNumber',
+                                        style: TextStyle(
+                                          color: numberColor,
+                                          fontWeight: FontWeight.w800,
+                                          fontSize: 14,
+                                          height: 1,
+                                          shadows: isSelected || isPeriodDay
+                                              ? const [
+                                            Shadow(
+                                              color: Color(0x22A00020),
+                                              blurRadius: 2,
+                                              offset: Offset(0, 1),
                                             ),
-                                          ),
-                                          Padding(
-                                            padding: const EdgeInsets.only(top: 7),
-                                            child: Text(
-                                              '$dayNumber',
-                                              style: TextStyle(
-                                                color: numberColor,
-                                                fontWeight: FontWeight.w800,
-                                                fontSize: 14,
-                                                height: 1,
-                                                shadows: isSelected || isPeriodDay
-                                                    ? const [
-                                                  Shadow(
-                                                    color: Color(0x22A00020),
-                                                    blurRadius: 2,
-                                                    offset: Offset(0, 1),
-                                                  ),
-                                                ]
-                                                    : null,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
+                                          ]
+                                              : null,
+                                        ),
                                       ),
                                     ),
-                                  ),
+                                  ],
                                 ),
                               ),
                             ),
                           ),
-                          const SizedBox(height: 2),
-                          if (isPeriodDay && !isSelected)
-                            const Icon(
-                              Icons.water_drop_rounded,
-                              size: 8,
-                              color: Color(0xFFE94262),
-                            )
-                          else
-                            const SizedBox(height: 8),
-                        ],
+                        ),
                       ),
-                    );
-                  },
+                    ),
+                    const SizedBox(height: 2),
+                    if (isPeriodDay && !isSelected)
+                      const Icon(
+                        Icons.water_drop_rounded,
+                        size: 8,
+                        color: Color(0xFFE94262),
+                      )
+                    else
+                      const SizedBox(height: 8),
+                  ],
                 ),
-              ),
-              const SizedBox(height: 10),
+              );
+            },
+          ),
+        ),
+        const SizedBox(height: 25),
 
-              // 🌟 စက်ဝိုင်းပုံစံ စက်ဝန်းဒီဇိုင်း (Transparent / Background မပါပါ)
-              Container(
-                margin: const EdgeInsets.symmetric(horizontal: 20),
-                padding: const EdgeInsets.all(18),
-                decoration: BoxDecoration(
-                  color: Colors.transparent,
-                  borderRadius: BorderRadius.circular(32),
-                ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        // အပြင်ဘက် စက်ဝိုင်းတန်း (Progress Track)
-                        SizedBox(
-                          width: 210,
-                          height: 210,
-                          child: CircularProgressIndicator(
-                            value: 1.0,
-                            strokeWidth: 10,
-                            backgroundColor: Colors.white.withValues(alpha: 0.3),
-                            valueColor:
-                            const AlwaysStoppedAnimation<Color>(Colors.transparent),
-                          ),
-                        ),
-                        SizedBox(
-                          width: 210,
-                          height: 210,
-                          child: CircularProgressIndicator(
-                            value: 0.35,
-                            strokeWidth: 10,
-                            strokeCap: StrokeCap.round,
-                            backgroundColor: Colors.transparent,
-                            valueColor:
-                            const AlwaysStoppedAnimation<Color>(Color(0xFFFF4081)),
-                          ),
-                        ),
-                        // အလယ်ဗဟိုရှိ ပန်းရောင် စက်ဝိုင်း
-                        Container(
-                          width: 165,
-                          height: 165,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            gradient: const LinearGradient(
-                              colors: [Color(0xFFFF6584), Color(0xFFFF4081)],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: const Color(0xFFFF4081).withValues(alpha: 0.4),
-                                blurRadius: 10,
-                                offset: const Offset(0, 4),
-                              ),
-                            ],
-                          ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Icon(
-                                Icons.water_drop_rounded,
-                                color: Colors.white,
-                                size: 22,
-                              ),
-                              const SizedBox(height: 2),
-                              const Text(
-                                'Period',
-                                style: TextStyle(
-                                  color: Colors.white70,
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                              const SizedBox(height: 1),
-                              const Text(
-                                'Day 1',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(height: 6),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: const [
-                                  Icon(Icons.circle, size: 7, color: Color(0xFF80D8FF)),
-                                  SizedBox(width: 4),
-                                  Text(
-                                    'Fertility',
-                                    style: TextStyle(
-                                        color: Colors.white, fontSize: 10.5),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 2),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: const [
-                                  Icon(Icons.circle, size: 7, color: Color(0xFFFFD54F)),
-                                  SizedBox(width: 4),
-                                  Text(
-                                    'Ovulation',
-                                    style: TextStyle(
-                                        color: Colors.white, fontSize: 10.5),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
+        // 🌟 အပြင်ဘက် Container ကို ဖြုတ်ထားပြီး စက်ဝိုင်းဒီဇိုင်းနှင့် ခလုတ်ကို တိုက်ရိုက်ဖော်ပြထားခြင်း
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Stack(
+                alignment: Alignment.center,
+                children: [
+                  // အပြင်ဘက် စက်ဝိုင်းတန်း (Progress Track)
+                  SizedBox(
+                    width: 210,
+                    height: 210,
+                    child: CircularProgressIndicator(
+                      value: 1.0,
+                      strokeWidth: 10,
+                      backgroundColor: Colors.white.withValues(alpha: 0.3),
+                      valueColor:
+                      const AlwaysStoppedAnimation<Color>(Colors.transparent),
+                    ),
+                  ),
+                  SizedBox(
+                    width: 210,
+                    height: 210,
+                    child: CircularProgressIndicator(
+                      value: 0.35,
+                      strokeWidth: 10,
+                      strokeCap: StrokeCap.round,
+                      backgroundColor: Colors.transparent,
+                      valueColor:
+                      const AlwaysStoppedAnimation<Color>(Color(0xFFFF4081)),
+                    ),
+                  ),
+                  // အလယ်ဗဟိုရှိ ပန်းရောင် စက်ဝိုင်း
+                  Container(
+                    width: 165,
+                    height: 165,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFFFF6584), Color(0xFFFF4081)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: const Color(0xFFFF4081).withValues(alpha: 0.4),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 20),
-                    // Edit Period ခလုတ်
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFE94360),
-                        foregroundColor: Colors.white,
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(24),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(
+                          Icons.water_drop_rounded,
+                          color: Colors.white,
+                          size: 22,
                         ),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 36,
-                          vertical: 10,
+                        const SizedBox(height: 2),
+                        const Text(
+                          'Period',
+                          style: TextStyle(
+                            color: Colors.white70,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
-                      ),
-                      onPressed: () {},
-                      child: const Text(
-                        '+ Edit Period',
-                        style: TextStyle(
-                          fontSize: 13.5,
-                          fontWeight: FontWeight.bold,
+                        const SizedBox(height: 1),
+                        const Text(
+                          'Day 1',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      ),
+                        const SizedBox(height: 6),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [
+                            Icon(Icons.circle, size: 7, color: Color(0xFF80D8FF)),
+                            SizedBox(width: 4),
+                            Text(
+                              'Fertility',
+                              style: TextStyle(
+                                  color: Colors.white, fontSize: 10.5),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 2),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [
+                            Icon(Icons.circle, size: 7, color: Color(0xFFFFD54F)),
+                            SizedBox(width: 4),
+                            Text(
+                              'Ovulation',
+                              style: TextStyle(
+                                  color: Colors.white, fontSize: 10.5),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
+                ],
+              ),
+              const SizedBox(height: 25),
+              // Edit Period ခလုတ်
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFE94360),
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(24),
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 36,
+                    vertical: 10,
+                  ),
+                ),
+                onPressed: () {},
+                child: const Text(
+                  '+ Edit Period',
+                  style: TextStyle(
+                    fontSize: 13.5,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ],
           ),
         ),
-      ),
+      ],
     );
   }
 }

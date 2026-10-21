@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:ui'; // 🌟 BackdropFilter အတွက် လိုအပ်သည်
 import '../../../../core/widgets/custom_app_bar.dart';
 import '../widgets/feeling_widget.dart';
+import '../widgets/promo_banner_section.dart';
 import '../widgets/quick_section.dart';
 import '../widgets/cycle_overview.dart';
 import '../widgets/date_slider_section.dart';
@@ -107,6 +108,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
           ],
         ),
       ),
+
       body: Stack(
         children: [
           // 🌟 နောက်ခံတွင် Glassmorphism ပေါ်လွင်စေရန် အရောင်စုံ Gradient အဝိုင်းများ ထည့်သွင်းခြင်း
@@ -176,7 +178,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                   ),
                 ),
               ),
-
+              const SizedBox(height: 10),
               Expanded(
                 child: SingleChildScrollView(
                   physics: const BouncingScrollPhysics(),
@@ -190,13 +192,13 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                         todayString: todayString,
                         nextPeriodString: nextPeriodString,
                       ),
-                      const SizedBox(height: 15),
+                      const SizedBox(height: 40),
                       const QuickSection(),
-                      const SizedBox(height: 15),
+                      const SizedBox(height: 30),
                       const CycleOverview(),
                       const SizedBox(height: 20),
                       const FeelingWidget(),
-                      const SizedBox(height: 100),
+                      const SizedBox(height: 130),
                     ],
                   ),
                 ),
