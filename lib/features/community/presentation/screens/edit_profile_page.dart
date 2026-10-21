@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../../core/widgets/custom_app_bar.dart';
+import '../../data/services/community_media_service.dart';
 
 class EditProfilePage extends StatefulWidget {
   const EditProfilePage({super.key});
@@ -15,6 +16,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _bioController = TextEditingController();
   bool _isLoading = false;
+  bool _isPickingPhoto = false;
+  String? _profileImage;
 
   @override
   void initState() {
@@ -25,14 +28,51 @@ class _EditProfilePageState extends State<EditProfilePage> {
   void _loadUserData() async {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
-      final doc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+      final doc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
       if (doc.exists) {
         setState(() {
           _nameController.text = doc.data()?['name'] ?? '';
           _bioController.text = doc.data()?['bio'] ?? '';
+          _profileImage = doc.data()?['image'] as String?;
         });
       }
     }
+  }
+
+  Future<void> _changePhoto() async {
+    setState(() => _isPickingPhoto = true);
+    try {
+      final photo = await CommunityMediaService.pickPhoto(
+        maxWidth: 256,
+        maxHeight: 256,
+        imageQuality: 45,
+      );
+      if (photo == null) return;
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) return;
+      await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+        'image': photo,
+      }, SetOptions(merge: true));
+      if (mounted) setState(() => _profileImage = photo);
+    } catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Photo Error: $error')));
+      }
+    } finally {
+      if (mounted) setState(() => _isPickingPhoto = false);
+    }
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _bioController.dispose();
+    super.dispose();
   }
 
   void _saveProfile() async {
@@ -83,10 +123,44 @@ class _EditProfilePageState extends State<EditProfilePage> {
                           shape: BoxShape.circle,
                           border: Border.all(color: Colors.white, width: 3),
                         ),
-                        child: const CircleAvatar(
+                        child: CircleAvatar(
                           radius: 48,
                           backgroundColor: Colors.white,
-                          backgroundImage: NetworkImage('https://cdn-icons-png.flaticon.com/512/1946/1946429.png'),
+                          backgroundImage: CommunityMediaService.imageProvider(
+                            _profileImage,
+                          ),
+                          child:
+                              CommunityMediaService.imageProvider(
+                                    _profileImage,
+                                  ) ==
+                                  null
+                              ? const Icon(
+                                  Icons.person_rounded,
+                                  size: 48,
+                                  color: Color(0xFFE94360),
+                                )
+                              : null,
+                        ),
+                      ),
+                      Positioned(
+                        right: 0,
+                        bottom: 0,
+                        child: IconButton.filled(
+                          tooltip: 'Change profile photo',
+                          onPressed: _isPickingPhoto ? null : _changePhoto,
+                          style: IconButton.styleFrom(
+                            backgroundColor: const Color(0xFFE94360),
+                          ),
+                          icon: _isPickingPhoto
+                              ? const SizedBox(
+                                  width: 18,
+                                  height: 18,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Colors.white,
+                                  ),
+                                )
+                              : const Icon(Icons.camera_alt_rounded, size: 18),
                         ),
                       ),
                     ],
@@ -110,7 +184,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('အမည် (Name)', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                          const Text(
+                            'အမည် (Name)',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                           const SizedBox(height: 8),
                           TextField(
                             controller: _nameController,
@@ -125,7 +205,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
                             ),
                           ),
                           const SizedBox(height: 18),
-                          const Text('Bio / အကြောင်းအရာ', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                          const Text(
+                            'Bio / အကြောင်းအရာ',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                           const SizedBox(height: 8),
                           TextField(
                             controller: _bioController,
@@ -153,13 +239,21 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       backgroundColor: const Color(0xFFE94360),
                       foregroundColor: Colors.white,
                       padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
                       elevation: 0,
                     ),
                     onPressed: _isLoading ? null : _saveProfile,
                     child: _isLoading
                         ? const CircularProgressIndicator(color: Colors.white)
-                        : const Text('Save Changes', style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+                        : const Text(
+                            'Save Changes',
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                   ),
                 ),
               ],
